@@ -1,19 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/function-component-definition */
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 import Icon from "@mui/material/Icon";
 import Tooltip from "@mui/material/Tooltip";
 // Material Dashboard 2 React components
@@ -22,13 +6,51 @@ import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDBadge from "components/MDBadge";
 import { Link } from 'react-router-dom';
-
+import axios from 'axios';
+import { useState, useEffect, useContext } from "react";
 // Images
 import team2 from "assets/images/team-2.jpg";
 import team3 from "assets/images/team-3.jpg";
 import team4 from "assets/images/team-4.jpg";
 
 export default function data() {
+  const [projects, setProjects] = useState([]);
+  const [store, setStore] = useState([]);
+  const token = localStorage.getItem("token");
+  const userId=localStorage.getItem("user")
+  const apiBaseUrl = process.env.REACT_APP_STORE_BASE_URL;
+
+  const fetchProjects = async () => {
+  
+      let projectData ={
+        user_id: userId
+      };
+    try {
+      // Make an API call to fetch notifications
+      const response = await axios.post(apiBaseUrl+'/assign/permission', projectData,{
+        headers: {
+          Authorization: `Token ${token}`,  // Replace with your authentication token
+        },
+      });
+      console.log(response)
+
+      // Check the response and update the state with the fetched notifications
+      if (response && response.status === 200) {
+        setProjects(response.data.assigned_projects);
+      } else {
+        console.error('Error:', response.data);
+        // Handle error
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle error
+    }
+  };
+  useEffect(() => {
+    // Fetch notifications when the component mounts
+    fetchProjects();
+  }, []); 
+
   const Author = ({ image, name, email }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
       {/* <MDAvatar src={image} name={name} size="sm" /> */}
@@ -49,162 +71,59 @@ export default function data() {
       <MDTypography variant="caption">{description}</MDTypography>
     </MDBox>
   );
-
+  
   return {
     columns: [
-      { Header: "project", accessor: "project", width: "45%", align: "left" },
-      { Header: "type", accessor: "type", align: "left" },
-      { Header: "main project", accessor: "main_project", align: "left" },
-      { Header: "status", accessor: "status", align: "center" },
-      { Header: "created date", accessor: "created_date", align: "center" },
-      { Header: "action", accessor: "action", align: "center" },
+      { Header: "項目序號", accessor: "project", width: "45%", align: "left" },
+      { Header: "店鋪", accessor: "store", align: "left" },
+      { Header: "由...製作", accessor: "created_by", align: "left" },
+      { Header: "標題", accessor: "title", align: "left" },
+   
+      { Header: "建立日期", accessor: "created_date", align: "center" },
+      // { Header: "action", accessor: "action", align: "center" },
     ],
 
-    rows: [
-      {
-        project: (
-          <Link to="/project-management/project-profile">
-            <Author component="a" href="/project-profile" image={team2} name="Euro Store" email="john@creative-tim.com" />
-          </Link>
-        ),
-        type: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-           sub-project
-          </MDTypography>
-        ),
-        main_project: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-           project 1
-          </MDTypography>
-        ),
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="active" color="success" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        created_date: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            23/04/18
-          </MDTypography>
-        ),
-        action: (
-          <MDBox ml="auto" lineHeight={0} color= "dark">
-          <Tooltip title="Edit Card" placement="top">
-            <Icon sx={{ cursor: "pointer" }} fontSize="small">
-              edit
-            </Icon>
-          </Tooltip>
-        </MDBox>
-        ),
-      },
-      {
-        project: (
-          <Link to="/project-management/project-profile">
-            <Author component="a" href="/project-profile" image={team2} name="Euro Store" email="john@creative-tim.com" />
-          </Link>
-        ),
-        type: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-           sub-project
-          </MDTypography>
-        ),
-        main_project: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-           project 1
-          </MDTypography>
-        ),
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="active" color="success" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        created_date: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            23/04/18
-          </MDTypography>
-        ),
-        action: (
-          <MDBox ml="auto" lineHeight={0} color= "dark">
-          <Tooltip title="Edit Card" placement="top">
-            <Icon sx={{ cursor: "pointer" }} fontSize="small">
-              edit
-            </Icon>
-          </Tooltip>
-        </MDBox>
-        ),
-      },
-      {
-        project: (
-          <Link to="/project-management/project-profile">
-            <Author component="a" href="/project-profile" image={team2} name="Euro Store" email="john@creative-tim.com" />
-          </Link>
-        ),
-        type: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-           sub-project
-          </MDTypography>
-        ),
-        main_project: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-           project 1
-          </MDTypography>
-        ),
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="active" color="success" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        created_date: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            23/04/18
-          </MDTypography>
-        ),
-        action: (
-          <MDBox ml="auto" lineHeight={0} color= "dark">
-          <Tooltip title="Edit Card" placement="top">
-            <Icon sx={{ cursor: "pointer" }} fontSize="small">
-              edit
-            </Icon>
-          </Tooltip>
-        </MDBox>
-        ),
-      },
-      {
-        project: (
-          <Link to="/project-management/project-profile">
-            <Author component="a" href="/project-profile" image={team2} name="Euro Store" email="john@creative-tim.com" />
-          </Link>
-        ),
-        type: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-           sub-project
-          </MDTypography>
-        ),
-        main_project: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-           project 1
-          </MDTypography>
-        ),
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="active" color="success" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        created_date: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            23/04/18
-          </MDTypography>
-        ),
-        action: (
-          <MDBox ml="auto" lineHeight={0} color= "dark">
-          <Tooltip title="Edit Card" placement="top">
-            <Icon sx={{ cursor: "pointer" }} fontSize="small">
-              edit
-            </Icon>
-          </Tooltip>
-        </MDBox>
-        ),
-      },
-    ],
-  };
+    rows :  projects.map((project, index) => ({
+      project: (
+        <Link to={`/project-management/project-profile/${project.project_id}`} key={index}>
+          <Author component="a" href="/project-profile" name= {project.project_serial_no}  />            
+        </Link>
+      ),
+      store: (
+        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium" key={index}>
+      {project.store}
+        </MDTypography>
+      ),
+      
+      created_by: (
+        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium" key={index}>
+      {project.created_by}
+        </MDTypography>
+      ),
+      title: (
+        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium" key={index}>
+          {project.title}
+        </MDTypography>
+      ),
+    
+      created_date: (
+        <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium" key={index}>
+          {project.created_at}
+        </MDTypography>
+      ),
+      // action: (
+      //   <MDBox ml="auto" lineHeight={0} color="dark" key={index}>
+      //     <Tooltip title="Edit Card" placement="top">
+      //       <Icon sx={{ cursor: "pointer" }} fontSize="small">
+      //         edit
+      //       </Icon>
+      //     </Tooltip>
+      //   </MDBox>
+      // ),
+    }))
+
+    
+    // 'rows' is now an array of objects that can be used within your application.
+    
+  }
 }

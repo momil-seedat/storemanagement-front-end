@@ -28,7 +28,44 @@ import team2 from "assets/images/team-2.jpg";
 import team3 from "assets/images/team-3.jpg";
 import team4 from "assets/images/team-4.jpg";
 
+import axios from 'axios';
+import { useState, useEffect, useContext } from "react";
+
 export default function data() {
+
+  
+  const [stores, setStores] = useState([]);
+  const token = localStorage.getItem("token");
+  const apiBaseUrl = process.env.REACT_APP_STORE_BASE_URL;
+
+  const fetchStores = async () => {
+    try {
+      // Make an API call to fetch notifications
+      const response = await axios.get(apiBaseUrl+'/api/store/', {
+        headers: {
+          Authorization: `Token ${token}`,  // Replace with your authentication token
+        },
+      });
+      console.log(response)
+
+      // Check the response and update the state with the fetched notifications
+      if (response && response.status === 200) {
+        setStores(response.data);
+      } else {
+        console.error('Error:', response.data);
+        // Handle error
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle error
+    }
+  };
+  useEffect(() => {
+    // Fetch notifications when the component mounts
+    fetchStores();
+  }, []); 
+
+
   const Author = ({ image, name, email }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
       {/* <MDAvatar src={image} name={name} size="sm" /> */}
@@ -52,156 +89,50 @@ export default function data() {
 
   return {
     columns: [
-      { Header: "store", accessor: "author", width: "45%", align: "left" },
-      { Header: "grade", accessor: "function", align: "left" },
-      { Header: "status", accessor: "status", align: "center" },
-      { Header: "created date", accessor: "employed", align: "center" },
-      { Header: "action", accessor: "action", align: "center" },
+      { Header: "店鋪", accessor: "author", width: "35%", align: "left" },
+      { Header: "地址", accessor: "function", align: "left" },
+      { Header: "業主姓名", accessor: "owner_name", align: "center" },
+      { Header: "品牌", accessor: "grade", align: "center" },
+      { Header: "頻道", accessor: "channel", align: "center" },
+      // { Header: "action", accessor: "action", align: "center" },
     ],
 
-    rows: [
-      {
+    rows:  stores.map((store, index) => ({
         author: (
-          <Link to="/store-management/store-profile">
-            <Author component="a" href="/store-profile" image={team2} name="Euro Store" email="john@creative-tim.com" />
+          <Link to={`/store-management/store-profile/${store.id}`}>
+            <Author component="a" href="/store-profile" image={team2} name={store.shop_name} email={store.email}/>
           </Link>
         ),
-        function: <Job  description="B" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="online" color="success" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        employed: (
+        function: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            23/04/18
+            {store.address}
           </MDTypography>
         ),
-        action: (
-          <MDBox ml="auto" lineHeight={0} color= "dark">
-          <Tooltip title="Edit Card" placement="top">
-            <Icon sx={{ cursor: "pointer" }} fontSize="small">
-              edit
-            </Icon>
-          </Tooltip>
-        </MDBox>
-        ),
-      },
-      {
-        author: <Author image={team3} name="Alexa Liras" email="alexa@creative-tim.com" />,
-        function: <Job  description="A" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="offline" color="dark" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        employed: (
+        
+        owner_name: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            11/01/19
+            {store.owner_name}
           </MDTypography>
         ),
-        action: (
-          <MDBox ml="auto" lineHeight={0} color= "dark">
-          <Tooltip title="Edit Card" placement="top">
-            <Icon sx={{ cursor: "pointer" }} fontSize="small">
-              edit
-            </Icon>
-          </Tooltip>
-        </MDBox>
-        ),
-      },
-      {
-        author: <Author image={team4} name="Laurent Perrier store" email="laurent@creative-tim.com" />,
-        function: <Job  description="B" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="online" color="success" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        employed: (
+        grade: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            19/09/17
+            {store.brands}
           </MDTypography>
         ),
-        action: (
-          <MDBox ml="auto" lineHeight={0} color= "dark">
-          <Tooltip title="Edit Card" placement="top">
-            <Icon sx={{ cursor: "pointer" }} fontSize="small">
-              edit
-            </Icon>
-          </Tooltip>
-        </MDBox>
-        ),
-      },
-      {
-        author: <Author image={team3} name="Michael Levi Store" email="michael@creative-tim.com" />,
-        function: <Job  description="B" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="online" color="success" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        employed: (
+        channel: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            24/12/08
+            {store.channel}
           </MDTypography>
         ),
-        action: (
-          <MDBox ml="auto" lineHeight={0} color= "dark">
-                <Tooltip title="Edit Card" placement="top">
-                  <Icon sx={{ cursor: "pointer" }} fontSize="small">
-                    edit
-                  </Icon>
-                </Tooltip>
-              </MDBox>
-        ),
-      },
-      {
-        author: <Author image={team3} name="Richard Gran" email="richard@creative-tim.com" />,
-        function: <Job  description="C" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="offline" color="dark" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        employed: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            04/10/21
-          </MDTypography>
-        ),
-        action: (
-          <MDBox ml="auto" lineHeight={0} color= "dark">
-                <Tooltip title="Edit Card" placement="top">
-                  <Icon sx={{ cursor: "pointer" }} fontSize="small">
-                    edit
-                  </Icon>
-                </Tooltip>
-              </MDBox>
-        ),
-      },
-      {
-        author: <Author image={team4} name="Miriam Eric" email="miriam@creative-tim.com" />,
-        function: <Job  description="B" />,
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent="offline" color="dark" variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        employed: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            14/09/20
-          </MDTypography>
-        ),
-        action: (
-          <MDBox ml="auto" lineHeight={0} color= "dark">
-                <Tooltip title="Edit Card" placement="top">
-                  <Icon sx={{ cursor: "pointer" }} fontSize="small">
-                    edit
-                  </Icon>
-                </Tooltip>
-              </MDBox>
-        ),
-      },
-    ],
+        // action: (
+        //   <MDBox ml="auto" lineHeight={0} color= "dark">
+        //   <Tooltip title="Edit Card" placement="top">
+        //     <Icon sx={{ cursor: "pointer" }} fontSize="small">
+        //       edit
+        //     </Icon>
+        //   </Tooltip>
+        // </MDBox>
+        // ),
+      }))
   };
 }

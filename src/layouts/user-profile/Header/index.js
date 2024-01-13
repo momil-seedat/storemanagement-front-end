@@ -1,17 +1,4 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
 
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 
 import { useState, useEffect } from "react";
 
@@ -88,21 +75,7 @@ function Header({ name, children }) {
           px: 2,
         }}
       >
-        <Grid container spacing={3} alignItems="center">
-          <Grid item>
-           {/* <MDAvatar src={burceMars} alt="profile-image" size="xl" shadow="sm" /> */}
-          </Grid>
-          <Grid item>
-            <MDBox height="100%" mt={0.5} lineHeight={1}>
-              <MDTypography variant="h5" fontWeight="medium">
-              Add New User
-              </MDTypography>
-              <MDTypography variant="button" color="text" fontWeight="regular">
-                Add User
-              </MDTypography>
-            </MDBox>
-          </Grid>
-        </Grid>
+        
         {children}
       </Card>
     </MDBox>

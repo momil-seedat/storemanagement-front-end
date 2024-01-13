@@ -1,22 +1,5 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
 
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
 
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-/**
-  This file is used for controlling the global states of the components,
-  you can customize the states for the different components here.
-*/
 
 import { createContext, useContext, useReducer, useMemo, useState, useEffect } from "react";
 
@@ -52,7 +35,7 @@ const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (!token) {
-      navigate("/auth/login");
+      navigate("/authentication/sign-in");
       return;
     }
 
@@ -61,6 +44,7 @@ const AuthContextProvider = ({ children }) => {
   }, [isAuthenticated]);
 
   const login = (token) => {
+   
     localStorage.setItem("token", token);
     setIsAuthenticated(true);
     navigate("/dashboard");
@@ -68,8 +52,11 @@ const AuthContextProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("user_group");
+    localStorage.removeItem("permissions");
     setIsAuthenticated(false);
-    navigate("/auth/login");
+    navigate("/authentication/sign-in");
   };
 
   return (
@@ -82,7 +69,6 @@ const AuthContextProvider = ({ children }) => {
 // Setting custom name for the context which is visible on react dev tools
 MaterialUI.displayName = "MaterialUIContext";
 
-// Material Dashboard 2 React reducer
 function reducer(state, action) {
   switch (action.type) {
     case "MINI_SIDENAV": {
@@ -121,6 +107,12 @@ function reducer(state, action) {
     case "TASKSUBMISSION": {
       return { ...state, TaskSubmission: action.value };
     }
+    case "HandleImageUploadPopup": {
+      return { ...state, HandleImageUploadPopup: action.value };
+    }
+    case "TaskMultipleSubmissionData": {
+      return { ...state, TaskMultipleSubmissionData: action.value };
+    }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
     }
@@ -142,6 +134,14 @@ function MaterialUIControllerProvider({ children }) {
     darkMode: false,
     TaskSubmission:false,
     ConditionalSearch:false,
+    HandleImageUploadPopup:false,
+    TaskMultipleSubmissionData:([
+      { photos: [], comments: Array(8).fill('') },
+      { photos: [], comments: Array(8).fill('') },
+      { photos: [], comments: Array(8).fill('') },
+      { photos: [], comments: Array(8).fill('') }
+    ]),
+    
   };
 
   const [controller, dispatch] = useReducer(reducer, initialState);
@@ -182,6 +182,10 @@ const setLayout = (dispatch, value) => dispatch({ type: "LAYOUT", value });
 const setDarkMode = (dispatch, value) => dispatch({ type: "DARKMODE", value });
 const setTaskSubmission = (dispatch, value) => dispatch({ type: "TASKSUBMISSION", value });
 const setConditionalSearch = (dispatch, value) => dispatch({ type: "ConditionalSearch", value });
+const SetHandleImageUploadPopup = (dispatch, value) => dispatch({ type: "HandleImageUploadPopup", value });
+const SetTaskMultipleSubmissionData = (dispatch, value) => dispatch({ type: "TaskMultipleSubmissionData", value });
+
+
 
 
 
@@ -201,4 +205,6 @@ export {
   setDarkMode,
   setTaskSubmission,
   setConditionalSearch,
+  SetHandleImageUploadPopup,
+  SetTaskMultipleSubmissionData,
 };

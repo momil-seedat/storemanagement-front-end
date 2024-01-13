@@ -41,7 +41,7 @@ function Bill({ name, company, email, vat, noGutter }) {
       borderRadius="lg"
       p={3}
       mb={noGutter ? 0 : 1}
-      mt={2}
+      mt={5}
     >
       <MDBox width="100%" display="flex" flexDirection="column">
         <MDBox
@@ -57,9 +57,9 @@ function Bill({ name, company, email, vat, noGutter }) {
 
           <MDBox display="flex" alignItems="center" mt={{ xs: 2, sm: 0 }} ml={{ xs: -1.5, sm: 0 }}>
             <MDBox mr={1}>
-              <MDButton variant="text" color="error">
+              {/* <MDButton variant="text" color="error">
                 <Icon>delete</Icon>&nbsp;delete
-              </MDButton>
+              </MDButton> */}
             </MDBox>
             <MDButton variant="text" color={darkMode ? "white" : "dark"}>
               <Icon>edit</Icon>&nbsp;edit
@@ -67,24 +67,24 @@ function Bill({ name, company, email, vat, noGutter }) {
           </MDBox>
         </MDBox>
         <MDBox mb={1} lineHeight={0}>
-          <MDTypography variant="caption" color="text">
+          <MDTypography variant="subtitle2" color="text">
             Company Name:&nbsp;&nbsp;&nbsp;
-            <MDTypography variant="caption" fontWeight="medium" textTransform="capitalize">
+            <MDTypography variant="subtitle2" fontWeight="medium" textTransform="capitalize">
               {company}
             </MDTypography>
           </MDTypography>
         </MDBox>
         <MDBox mb={1} lineHeight={0}>
-          <MDTypography variant="caption" color="text">
+          <MDTypography variant="subtitle2" color="text">
             Email Address:&nbsp;&nbsp;&nbsp;
-            <MDTypography variant="caption" fontWeight="medium">
+            <MDTypography variant="subtitle2" fontWeight="medium">
               {email}
             </MDTypography>
           </MDTypography>
         </MDBox>
-        <MDTypography variant="caption" color="text">
+        <MDTypography variant="subtitle2" color="text">
           VAT Number:&nbsp;&nbsp;&nbsp;
-          <MDTypography variant="caption" fontWeight="medium">
+          <MDTypography variant="subtitle2" fontWeight="medium">
             {vat}
           </MDTypography>
         </MDTypography>

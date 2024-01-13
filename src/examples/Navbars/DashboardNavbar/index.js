@@ -1,20 +1,7 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
 
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 
 import { useState, useEffect, useContext } from "react";
-
+import axios from 'axios';
 // react-router components
 import { useLocation, Link, useNavigate } from "react-router-dom";
 
@@ -63,8 +50,13 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
   const [openMenu, setOpenMenu] = useState(false);
+  const [notifications, setNotifications] = useState([]);
   const route = useLocation().pathname.split("/").slice(1);
   let navigate = useNavigate();
+  const apiBaseUrl = process.env.REACT_APP_STORE_BASE_URL;
+
+  
+
 
   useEffect(() => {
     // Setting the navbar type
@@ -96,8 +88,35 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
-
+  const token = localStorage.getItem("token");
+  const user=localStorage.getItem("user");
   // Render the notifications menu
+  const getNotification = async () => {
+    try {
+      console.log(apiBaseUrl);
+      // Make an API call to fetch notifications
+      const response = await axios.get(apiBaseUrl+'/api/notifications/user/'+user, {
+        headers: {
+          Authorization: `Token ${token}`,  // Replace with your authentication token
+        },
+      });
+
+      // Check the response and update the state with the fetched notifications
+      if (response && response.status === 200) {
+        setNotifications(response.data.notifications);
+      } else {
+        console.error('Error:', response.data);
+        // Handle error
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle error
+    }
+  };
+  useEffect(() => {
+    // Fetch notifications when the component mounts
+    getNotification();
+  }, []); 
   const renderMenu = () => (
     <Menu
       anchorEl={openMenu}
@@ -110,10 +129,14 @@ function DashboardNavbar({ absolute, light, isMini }) {
       onClose={handleCloseMenu}
       sx={{ mt: 2 }}
     >
-      <NotificationItem icon={<Icon>email</Icon>} title="Check new messages" />
-      <NotificationItem icon={<Icon>podcasts</Icon>} title="Manage Podcast sessions" />
-      <NotificationItem icon={<Icon>shopping_cart</Icon>} title="Payment successfully completed" />
-    </Menu>
+        {notifications.map((notification) => (
+        
+        <Link to={`${notification.link}`}>
+        <NotificationItem key={notification.id} icon={<Icon>{notification.type}</Icon>} title={notification.text} />
+        </Link>
+      ))}
+      
+       </Menu>
   );
 
   // Styles for the navbar icons
@@ -131,6 +154,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
   const handleLogOut = async () => {
     const response = await AuthService.logout();
+    console.log(response);
     authContext.logout();
   };
 
@@ -150,11 +174,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
               <MDInput label="Search here" />
             </MDBox>
             <MDBox display="flex" alignItems="center" color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in/basic">
+              {/* <Link to="/authentication/sign-in/basic">
                 <IconButton sx={navbarIconButton} size="small" disableRipple>
                   <Icon sx={iconsStyle}>account_circle</Icon>
                 </IconButton>
-              </Link>
+              </Link> */}
               <IconButton
                 size="small"
                 disableRipple
@@ -166,7 +190,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                   {miniSidenav ? "menu_open" : "menu"}
                 </Icon>
               </IconButton>
-              <IconButton
+              {/* <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
@@ -174,7 +198,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 onClick={handleConfiguratorOpen}
               >
                 <Icon sx={iconsStyle}>settings</Icon>
-              </IconButton>
+              </IconButton> */}
               <IconButton
                 size="small"
                 disableRipple

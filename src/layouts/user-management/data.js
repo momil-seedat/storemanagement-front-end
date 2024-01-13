@@ -25,8 +25,52 @@ import MDBadge from "components/MDBadge";
 import team2 from "assets/images/team-2.jpg";
 import team3 from "assets/images/team-3.jpg";
 import team4 from "assets/images/team-4.jpg";
-
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useState, useEffect} from "react";
 export default function data() {
+  const [users, setUsers] = useState([]);
+  const token = localStorage.getItem("token");
+  const userGroup = localStorage.getItem("user_group");
+  const apiBaseUrl = process.env.REACT_APP_STORE_BASE_URL;
+  
+  function convertUTCDateToLocalDate(utcDate) {
+    const dateObj = new Date(utcDate);
+  
+    const day = dateObj.getUTCDate().toString().padStart(2, '0');
+    const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0'); // Months are zero-indexed
+    const year = dateObj.getUTCFullYear();
+  
+    return `${day}-${month}-${year}`;
+  }
+
+  const fetchUsers = async () => {
+    try {
+        // Make an API call to fetch users
+        const response = await axios.get(apiBaseUrl+'/users/', {
+            headers: {
+                Authorization: `Token ${token}`,  // Replace with your authentication token
+            },
+        });
+        console.log(response)
+
+        // Check the response and update the state with the fetched notifications
+        if (response && response.status === 200) {
+            setUsers(response.data);
+        } else {
+            console.error('Error:', response.data);
+            // Handle error
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        // Handle error
+    }
+};
+useEffect(() => {
+    // Fetch notifications when the component mounts
+    fetchUsers();
+}, []);
+
   const Author = ({ image, name, email }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>
       <MDAvatar src={image} name={name} size="sm" />
@@ -50,103 +94,73 @@ export default function data() {
 
   return {
     columns: [
-      { Header: "user", accessor: "user", width: "45%", align: "left" },
-      { Header: "mobile no", accessor: "mobile_no", align: "left" },
-      { Header: "email", accessor: "email", align: "left" },
-      { Header: "role", accessor: "role", align: "left" },
-      { Header: "creation date", accessor: "creationdate", align: "center" },
-      { Header: "action", accessor: "action", align: "center" },
+     
+      { Header: "使用者名稱", accessor: "username", align: "left" },
+      { Header: "電子郵件", accessor: "email", align: "left" },
+      { Header: "名", accessor: "firstname", align: "left" },
+      { Header: "姓", accessor: "lastname", align: "left" },
+      { Header: "角色", accessor: "role", align: "left" },
+      { Header: "建立日期", accessor: "creationdate", align: "center" },
+      { Header: "行動", accessor: "action", align: "center" },
     ],
 
-    rows: [
+    rows:  users.map((user, index) => (
       {
-        user: <Author image={team2} name="John Michael" email="" />,
-        role: <Job title="Admin" description="" />,
-        mobile_no: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            92344904043
-          </MDTypography>
-        ),
-        email: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            admin@material.com
-          </MDTypography>
-        ),
-        creationdate: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            23/04/18
-          </MDTypography>
-        ),
-        action: (
-            <MDBox>
-                <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium" mr={2}>
-                Edit
-                </MDTypography>
-                <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-                Delete
-                </MDTypography>
-            </MDBox>
-        ),
-      },
-      {
-        user: <Author image={team3} name="Alexa Liras" email="" />,
         
-        role: <Job title="Creator" description="" />,
-        mobile_no: (
+        username: (
+       
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            92344904043
+            {user.username}
           </MDTypography>
+          
         ),
         email: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            creator@material.com
+             {user.email}
           </MDTypography>
+        ),
+        firstname: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+             {user.first_name}
+          </MDTypography>
+        ),
+        lastname: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+             {user.last_name}
+          </MDTypography>
+        ),
+        role: (
+          <div>
+          {user.groups && (  // Check if user.groups exists
+            <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+              {user.groups.name}
+            </MDTypography>
+          )}
+        </div>
         ),
         creationdate: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            11/01/19
+          { convertUTCDateToLocalDate(user.date_joined)}
           </MDTypography>
         ),
         action: (
+          <div>
+          {userGroup === "ADMIN" && (
             <MDBox>
+              
+               <Link to={`/user-management/update-profile/${user.id}`}>
                 <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium" mr={2}>
                 Edit
                 </MDTypography>
-                <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+                </Link>
+                {/* <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
                 Delete
-                </MDTypography>
+                </MDTypography> */}
             </MDBox>
+          )}
+          </div>
         ),
-      },
-      {
-        user: <Author image={team4} name="Laurent Perrier" email="" />,
-        role: <Job title="Member" description="" />,
-        mobile_no: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            92344904043
-          </MDTypography>
-        ),
-        email: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            member@material.com
-          </MDTypography>
-        ),
-        creationdate: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            19/09/17
-          </MDTypography>
-        ),
-        action: (
-          <MDBox>
-            <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium" mr={2}>
-              Edit
-            </MDTypography>
-            <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-              Delete
-            </MDTypography>
-          </MDBox>
-        ),
-      },
-    ],
-  };
-}
+      }
+    ),
+  )
+}}

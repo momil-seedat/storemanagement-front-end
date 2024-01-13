@@ -1,27 +1,4 @@
 
-/** 
-  All of the routes for the Material Dashboard 2 React are added here,
-  You can add a new route, customize the routes and delete the routes here.
-
-  Once you add a new route on this file it will be visible automatically on
-  the Sidenav  .
-
-  For adding a new route you can follow the existing routes in the routes array.
-  1. The `type` key with the `collapse` value is used for a route.
-  2. The `type` key with the `title` value is used for a title inside the Sidenav. 
-  3. The `type` key with the `divider` value is used for a divider between Sidenav items.
-  4. The `name` key is used for the name of the route on the Sidenav.
-  5. The `key` key is used for the key of the route (It will help you with the key prop inside a loop).
-  6. The `icon` key is used for the icon of the route on the Sidenav, you have to add a node.
-  7. The `collapse` key is used for making a collapsible item on the Sidenav that has other routes
-  inside (nested routes), you need to pass the nested routes inside an array as a value for the `collapse` key.
-  8. The `route` key is used to store the route location which is used for the react router.
-  9. The `href` key is used to store the external links location.
-  10. The `title` key is only for the item with the type of `title` and its used for the title text on the Sidenav.
-  10. The `component` key is used to store the component of its route.
-*/
-
-// Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
 import Tables from "layouts/tables";
 import Billing from "layouts/billing";
@@ -34,10 +11,12 @@ import SignUp from "layouts/authentication/sign-up";
 import AddUser from "layouts/user-profile";
 import UserManagement from "layouts/user-management";
 import UserProfile from "layouts/user-management/user-profile";
+import UpdateUserProfile from "layouts/user-management/update-profile";
 import StoreManagement from "layouts/store-management";
 import ProjectManagement from "layouts/project-management";
 import TaskManagement from "layouts/task-management";
-import TaskSubmission from "layouts/task-submission";
+import TaskSubmission from "layouts/task-submission/add-task-submission";
+import ViewSubmission from "layouts/task-submission/view-submission";
 import SubmittedTasks from "layouts/submitted-tasks";
 import ViewTaskSubmissionPopup from "layouts/views-task";
 import ClientVIew from "layouts/client";
@@ -45,7 +24,10 @@ import ClientVIew from "layouts/client";
 import StoreProfile from "layouts/store-management/store-profile";
 import AddStore from "layouts/store-management/add-store";
 import AddProject from "layouts/project-management/add-project";
+import ProjectProfile from "layouts/project-management/project-profile";
 import AddTask from "layouts/task-management/add-task";
+import TaskProfile from "layouts/task-management/task-profile";
+import Permissions from "layouts/permissions/add-permission";
 import Login from "auth/login";
 import Register from "auth/register";
 import ForgotPassword from "auth/forgot-password";
@@ -54,10 +36,11 @@ import ResetPassword from "auth/reset-password";
 // @mui icons
 import Icon from "@mui/material/Icon";
 
+
 const routes = [
   {
     type: "examples",
-    name: "Dashboard",
+    name: "儀表板",
     key: "dashboard",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
@@ -88,7 +71,7 @@ const routes = [
   //   component: <RTL />,
   // },
   {
-    type: "collapse",
+    type: "example",
     name: "Notifications",
     key: "notifications",
     icon: <Icon fontSize="small">notifications</Icon>,
@@ -104,7 +87,7 @@ const routes = [
   //   component: <Profile />,
   // },
   {
-    type: "collapse",
+    type: "example",
     name: "Sign In",
     key: "sign-in",
     icon: <Icon fontSize="small">login</Icon>,
@@ -114,16 +97,16 @@ const routes = [
   {
     
     name: "Add User",
-    key: "add-user",
+    key: "add_user",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/user-profile",
     component: <AddUser />,
    
   },
   {
-    type: "examples",
+   
     name: "User Profile",
-    key: "user-profile",
+    key: "change_user",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/user-management/user-profile",
     component: <UserProfile />,
@@ -131,7 +114,7 @@ const routes = [
   },
   {
     type: "examples",
-    name: "Task ",
+    name: "工作管理 ",
     key: "view_task",
     icon: <Icon fontSize="small">task</Icon>,
     route: "/task-management",
@@ -139,48 +122,77 @@ const routes = [
    
   },
   {
-    type: "examples",
+   
     name: "Submitted Tasks",
-    key: "submitted-task",
+    key: "view_tasksubmission",
     icon: <Icon fontSize="small">task</Icon>,
     route: "/submitted-tasks",
     component: <SubmittedTasks />,
   },
   {
-    type: "examples",
+  
     name: "Task Submission",
-    key: "task-submission",
+    key: "add_tasksubmission",
     icon: <Icon fontSize="small">list</Icon>,
-    route: "/task-submission",
+    route: "/task-submission/add-task-submission/:task_id",
     component: <TaskSubmission />,
   },
+
+  {
+   
+    name: "View Submission",
+    key: "view_submission",
+    icon: <Icon fontSize="small">list</Icon>,
+    route: "/task-submission/view-submission/:task_id",
+    component: <ViewSubmission />,
+  }
   ,
   {
     type: "examples",
-    name: "User Management",
-    key: "user-management",
-    icon: <Icon fontSize="small">list</Icon>,
+    name: "使用者管理",
+    key: "view_user",
+    icon: <Icon fontSize="small">person</Icon>,
     route: "/user-management",
     component: <UserManagement />,
   },
+  
   {
     type: "examples",
-    name: "Store Management",
+    name: "店舖管理",
     key: "view_store",
-    icon: <Icon fontSize="small">list</Icon>,
+    icon: <Icon fontSize="small">store</Icon>,
     route: "/store-management",
     component: <StoreManagement/>,
   },
   {
     type: "examples",
-    name: "Project Management",
-    key: "project-management",
+    name: "專案管理",
+    key: "view_project",
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/project-management",
     component: <ProjectManagement />,
   },
+  
   {
-    type: "collapse",
+    type: "examples",
+    name: "分配的權限",
+    key: "assign_permission",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/permissions",
+    component: <Permissions/>,
+  },
+  
+  {
+    type: "project-profile",
+    name: "Project Management",
+    key: "view_project",
+    icon: <Icon fontSize="small">assignment</Icon>,
+    route: "/project-management/project-profile/:project_id",
+    component: <ProjectProfile />,
+  },
+
+  {
+    type: "example",
     name: "Sign Up",
     key: "sign-up",
     icon: <Icon fontSize="small">assignment</Icon>,
@@ -224,7 +236,7 @@ const routes = [
     name: "store-profile",
     key: "store-profile",
     icon: <Icon fontSize="small">Store Profile</Icon>,
-    route: "/store-management/store-profile",
+    route: "/store-management/store-profile/:store_id",
     component: <StoreProfile />,
   },
   {
@@ -237,10 +249,17 @@ const routes = [
   },
   {
    
-    name: "view-task-popup",
-    key: "view-task-popup",
+    name: "view_tasksubmission",
+    key: "view_task",
     route: "/task-mangement/view-submission",
     component: <ViewTaskSubmissionPopup/>,
+  },
+  {
+   
+    name: "task_profile",
+    key: "task_profile",
+    route: "/task-mangement/task_profile/:task_id",
+    component: <TaskProfile/>,
   },
   {
    
@@ -252,7 +271,7 @@ const routes = [
   {
    
     name: "add-project",
-    key: "add-project",
+    key: "add_project",
     icon: <Icon fontSize="small">Add Store</Icon>,
     route: "/project-management/add-project",
     component: <AddProject />,
@@ -260,10 +279,18 @@ const routes = [
   {
    
     name: "add-task",
-    key: "add-task",
+    key: "add_task",
     icon: <Icon fontSize="small">Add Task</Icon>,
     route: "/task-management/add-task",
     component: <AddTask />,
+  },
+  {
+    
+    name: "Update User Profile",
+    key: "update_profile",
+    icon: <Icon fontSize="small">list</Icon>,
+    route: "/user-management/update-profile/:user_id",
+    component: <UpdateUserProfile />,
   },
 ];
 

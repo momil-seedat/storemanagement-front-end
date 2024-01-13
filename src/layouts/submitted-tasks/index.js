@@ -72,7 +72,7 @@ function TaskProject() {
       
      
     </DashboardLayout>
-  );
+  ); 
 }
 
 export default TaskProject;

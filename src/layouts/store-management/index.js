@@ -43,7 +43,8 @@ function Tables() {
     
       <MDButton  component={Link} to="/store-management/add-store" variant="gradient" color="dark">
           <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-          &nbsp;add new store
+          &nbsp;新增商店
+          {/* add new store */}
         </MDButton>
     
       <MDBox pt={6} pb={3}>

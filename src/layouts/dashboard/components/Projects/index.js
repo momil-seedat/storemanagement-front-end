@@ -34,6 +34,7 @@ import data from "layouts/dashboard/components/Projects/data";
 function Projects() {
   const { columns, rows } = data();
   const [menu, setMenu] = useState(null);
+  const userGroup = localStorage.getItem("user_group");
 
   const openMenu = ({ currentTarget }) => setMenu(currentTarget);
   const closeMenu = () => setMenu(null);
@@ -60,6 +61,21 @@ function Projects() {
   );
 
   return (
+    <div>
+     {userGroup !== 'ADMIN' ? (
+      <Card>
+      <MDBox display="flex" justifyContent="space-between" alignItems="center" p={8}>
+        
+          <MDTypography variant="h3" gutterBottom>
+          {/* WELCOME TO Dashboard */}
+          欢迎来到仪表板
+          </MDTypography>
+          
+      </MDBox>
+      
+    </Card>
+         ) : (
+
     <Card>
       <MDBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
         <MDBox>
@@ -81,12 +97,12 @@ function Projects() {
             </MDTypography>
           </MDBox>
         </MDBox>
-        <MDBox color="text" px={2}>
+        {/* <MDBox color="text" px={2}>
           <Icon sx={{ cursor: "pointer", fontWeight: "bold" }} fontSize="small" onClick={openMenu}>
             more_vert
           </Icon>
         </MDBox>
-        {renderMenu}
+        {renderMenu} */}
       </MDBox>
       <MDBox>
         <DataTable
@@ -97,7 +113,8 @@ function Projects() {
           entriesPerPage={false}
         />
       </MDBox>
-    </Card>
+    </Card> )}
+    </div>
   );
 }
 

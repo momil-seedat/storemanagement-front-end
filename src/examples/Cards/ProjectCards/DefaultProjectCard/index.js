@@ -61,10 +61,10 @@ function DefaultProjectCard({ image, label, title, description, action, authors 
         overflow: "visible",
       }}
     >
-      <MDBox position="relative" width="100.25%" shadow="xl" borderRadius="xl">
+      <MDBox position="fixed" width="100.25%" shadow="xl" borderRadius="xl">
         <CardMedia
-          src={image}
-          component="img"
+        
+        
           title={title}
           sx={{
             maxWidth: "100%",

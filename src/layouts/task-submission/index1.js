@@ -9,20 +9,28 @@ import axios from 'axios';
 import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
 import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
 import { useMaterialUIController } from 'context';
-import { setTaskSubmission } from 'context';
+import UploadPhotos from './photo';
+import { SetHandleImageUploadPopup } from 'context';
+// import { setTaskSubmission } from 'context';
 
 
 
 
 const SubmitNewTask = () => {
   const [controller, dispatch] = useMaterialUIController();
+
   const isEditTaskActive=controller.TaskSubmission
       //Add task left component
       const [title, setTitle] = useState('');
-  const [photos, setPhotos] = useState([]);
+  // const [photos, setPhotos] = useState([]);
   const [description, setDescription] = useState('');
   const [TaskID,setTaskID]=useState();
 
+// This is where all images and comments store along with submission id 
+  const MultipleImagesSubmisssionData=controller.TaskMultipleSubmissionData
+// printing 9
+  console.log('Multiple images \n',MultipleImagesSubmisssionData)
+  
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
   };
@@ -31,66 +39,118 @@ const SubmitNewTask = () => {
   //   const newPhotos = Array.from(e.target.files);
   //   setPhotos((prevPhotos) => [...prevPhotos, ...newPhotos]);
   // };
-  const handlePhotoChange = (e) => {
-    const newPhotos = Array.from(e.target.files);
-    const validPhotos = [];
+  // const handlePhotoChange = (e) => {
+  //   const newPhotos = Array.from(e.target.files);
+  //   const validPhotos = [];
   
-    // Function to check if an image is square and not larger than 2000x2000 pixels
-    const isValidImage = (img) => {
-      const MAX_SIZE = 2000; // Maximum size allowed
+  //   // Function to check if an image is square and not larger than 2000x2000 pixels
+  //   const isValidImage = (img) => {
+  //     const MAX_SIZE = 2000; // Maximum size allowed
   
-      return new Promise((resolve) => {
-        const reader = new FileReader();
+  //     return new Promise((resolve) => {
+  //       const reader = new FileReader();
   
-        reader.onload = (e) => {
-          const image = new Image();
-          image.src = e.target.result;
+  //       reader.onload = (e) => {
+  //         const image = new Image();
+  //         image.src = e.target.result;
   
-          image.onload = () => {
-            const width = image.width;
-            const height = image.height;
+  //         image.onload = () => {
+  //           const width = image.width;
+  //           const height = image.height;
   
-            if (height<= MAX_SIZE && width <= MAX_SIZE) {
-              validPhotos.push(img);
-            } else {
-              // Set the error message if the image doesn't meet the criteria
-              setPhotosError('Image dimensions must be square and not exceed 2000x2000 pixels.');
-            }
+  //           if (height<= MAX_SIZE && width <= MAX_SIZE) {
+  //             validPhotos.push(img);
+  //           } else {
+  //             // Set the error message if the image doesn't meet the criteria
+  //             setPhotosError('Image dimensions must be square and not exceed 2000x2000 pixels.');
+  //           }
   
-            if (validPhotos.length === newPhotos.length) {
-              // All selected images have been checked
-              setPhotos((prevPhotos) => [...prevPhotos, ...validPhotos]);
-            }
-            resolve();
-          };
-        };
+  //           if (validPhotos.length === newPhotos.length) {
+  //             // All selected images have been checked
+  //             setPhotos((prevPhotos) => [...prevPhotos, ...validPhotos]);
+  //           }
+  //           resolve();
+  //         };
+  //       };
   
-        reader.readAsDataURL(img);
-      });
-    };
+  //       reader.readAsDataURL(img);
+  //     });
+  //   };
   
-    // Clear any previous error message
-    setPhotosError('');
+  //   // Clear any previous error message
+  //   setPhotosError('');
   
-    // Check each selected image
-    const checkImages = async () => {
-      for (const photo of newPhotos) {
-        await isValidImage(photo);
-      }
-    };
+  //   // Check each selected image
+  //   const checkImages = async () => {
+  //     for (const photo of newPhotos) {
+  //       await isValidImage(photo);
+  //     }
+  //   };
   
-    checkImages();
-  };
+  //   checkImages();
+  // };
   
   
   
-  const handleRemovePhoto = (index) => {
-    setPhotos((prevPhotos) => prevPhotos.filter((_, i) => i !== index));
-  };
+  // const handleRemovePhoto = (index) => {
+  //   setPhotos((prevPhotos) => prevPhotos.filter((_, i) => i !== index));
+  // };
 
   const handleDescriptionChange = (e) => {
     setDescription(e.target.value);
   };
+// Show image upload Popup main 
+
+const ShowUploadPopUp=controller.HandleImageUploadPopup
+// Multiple Image Submission Current Id 
+const [currentSubmissionNUMBER,SetCurrentSubmissionNumber]=useState(0)
+// /////////////////////////
+const [showPopup, setShowPopup] = useState(false);
+  const [photos, setPhotos] = useState([]);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(null);
+  const [comments, setComments] = useState([]);
+
+  const handlePhotoChange = (event) => {
+    const selectedFiles = Array.from(event.target.files);
+    const updatedPhotos = [...photos];
+    const updatedComments = [...comments];
+
+    selectedFiles.forEach((file) => {
+      updatedPhotos.push(file);
+      updatedComments.push('');
+    });
+
+    setPhotos(updatedPhotos.slice(0, 15)); // Limit photos to 15
+    setComments(updatedComments.slice(0, 15)); // Limit comments to 15
+  };
+
+  const handleRemovePhoto = (index) => {
+    const updatedPhotos = [...photos];
+    const updatedComments = [...comments];
+
+    updatedPhotos.splice(index, 1);
+    updatedComments.splice(index, 1);
+
+    setPhotos(updatedPhotos);
+    setComments(updatedComments);
+  };
+
+  const handleCommentChange = (index, comment) => {
+    const updatedComments = [...comments];
+    updatedComments[index] = comment;
+    setComments(updatedComments);
+  };
+
+  const handleSave = () => {
+    // Perform actions with photos and comments, like sending to server or storing in state.
+    // Then, close the popup or perform any necessary actions.
+    setShowPopup(false);
+    setSelectedPhotoIndex(null);
+  };
+
+//////////////////////
+
+
 
   
   //  const signal = useSelector((state) => state.signalrouter);
@@ -143,7 +203,7 @@ const SubmitNewTask = () => {
       setshowtaskwidget(str)
     }
     const handleSubmitTask = async (str) => {
-      setTaskSubmission(dispatch,false)
+      // setTaskSubmission(dispatch,false)
 
       // Initialize error states
       setHeightError('');
@@ -185,9 +245,12 @@ const SubmitNewTask = () => {
         formData.append('length', Length);
         formData.append('category',selectedSubcategory)
           
-        photos.forEach((photo, index) => {
-          formData.append(`images`, photo); // Assuming 'photo' is the File object
+        const images = photos.map((photo, index) => {
+          return { image: photo }; // Assuming 'image1', 'image2', ...
         });
+        // photos.forEach((photo, index) => {
+        //   formData.append(`images`, photo); // Assuming 'photo' is the File object
+        // });
       
         
     
@@ -226,140 +289,18 @@ const SubmitNewTask = () => {
     }
     
   
-    const handleCategoryChange = (categoryId) => {
-      setSelectedCategory(categoryId);
-      setSelectedSubcategory('');
-    };
+  
     const handleTaskid = (id) => {
       setTaskID(id);
     };
-  
-    const handleSubcategoryChange = (subcategoryId) => {
-      setSelectedSubcategory(subcategoryId);
-    };
+    // Upload Photo State Handler
+    const  handleUploadPhoto=(str,id)=>{
+      SetHandleImageUploadPopup(dispatch,str)
+      SetCurrentSubmissionNumber(id)
+    }
+    
     const taskid=[1,2,3]
-    const categories = [
-      {
-        id: 1,
-        name: 'Electronics',
-        subcategories: [
-          { id: 13, name: 'Computers & Laptops' },
-          { id: 14, name: 'Smartphones & Accessories' },
-          { id: 15, name: 'Cameras & Photography' },
-          { id: 16, name: 'Audio & Headphones' },
-          { id: 17, name: 'TV & Home Entertainment' },
-          { id: 18, name: 'Wearable Technology' },
-        ],
-      },
-      {
-        id: 2,
-        name: 'Fashion',
-        subcategories: [
-          { id: 19, name: 'Clothing' },
-          { id: 20, name: 'Shoes' },
-          { id: 21, name: 'Bags & Accessories' },
-          { id: 22, name: 'Jewelry & Watches' },
-          { id: 23, name: 'Beauty & Cosmetics' },
-        ],
-      },
-      {
-        id: 3,
-        name: 'Home & Living',
-        subcategories: [
-          { id: 24, name: 'Furniture' },
-          { id: 25, name: 'Home Decor' },
-          { id: 26, name: 'Kitchen & Dining' },
-          { id: 27, name: 'Bedding & Bath' },
-          { id: 28, name: 'Appliances' },
-        ],
-      },
-      {
-        id: 4,
-        name: 'Sports & Outdoors',
-        subcategories: [
-          { id: 29, name: 'Sports Equipment' },
-          { id: 30, name: 'Outdoor Gear' },
-          { id: 31, name: 'Activewear' },
-          { id: 32, name: 'Fitness & Exercise' },
-        ],
-      },
-      {
-        id: 5,
-        name: 'Health & Wellness',
-        subcategories: [
-          { id: 33, name: 'Vitamins & Supplements' },
-          { id: 34, name: 'Personal Care' },
-          { id: 35, name: 'Medical Supplies' },
-          { id: 36, name: 'Wellness tasks' },
-        ],
-      },
-      {
-        id: 6,
-        name: 'Toys & Games',
-        subcategories: [
-          { id: 37, name: 'Toys for Kids' },
-          { id: 38, name: 'Board Games & Puzzles' },
-          { id: 39, name: 'Remote Control Toys' },
-          { id: 40, name: 'Outdoor Play Equipment' },
-        ],
-      },
-      {
-        id: 7,
-        name: 'Books & Stationery',
-        subcategories: [
-          { id: 41, name: 'Books' },
-          { id: 42, name: 'Notebooks & Journals' },
-          { id: 43, name: 'Writing Instruments' },
-          { id: 44, name: 'Art & Craft Supplies' },
-        ],
-      },
-      {
-        id: 8,
-        name: 'Automotive',
-        subcategories: [
-          { id: 45, name: 'Car Parts & Accessories' },
-          { id: 46, name: 'Tools & Equipment' },
-          { id: 47, name: 'Tires & Wheels' },
-          { id: 48, name: 'Car Electronics' },
-        ],
-      },
-      {
-        id: 9,
-        name: 'Industrial & Business',
-        subcategories: [
-          { id: 49, name: 'Office Supplies' },
-          { id: 50, name: 'Industrial Equipment' },
-          { id: 51, name: 'Manufacturing & taskion Tools' },
-        ],
-      },
-      {
-        id: 10,
-        name: 'Home Improvement',
-        subcategories: [
-          { id: 52, name: 'Tools & Hardware' },
-          { id: 53, name: 'Building Supplies' },
-          { id: 54, name: 'Electrical & Plumbing' },
-        ],
-      },
-      {
-        id: 11,
-        name: 'Food & Beverages',
-        subcategories: [
-          { id: 55, name: 'Groceries' },
-          { id: 56, name: 'Snacks & Confectionery' },
-          { id: 57, name: 'Beverages' },
-        ],
-      },
-      {
-        id: 12,
-        name: 'Pet Supplies',
-        subcategories: [
-          { id: 58, name: 'Pet Food' },
-          { id: 59, name: 'Pet Accessories' },
-          { id: 60, name: 'Pet Care tasks' },
-        ],
-      },
-    ];
+    
     return (
       <>
 <DashboardLayout>
@@ -388,7 +329,7 @@ const SubmitNewTask = () => {
         ))}
       </select>
       </div>
-      <div className="flex flex-col space-y-4 ">
+      {/* <div className="flex flex-col space-y-4 ">
         <div className="flex flex-col">
         <label htmlFor="title" className="text-gray-700  mb-1">
   <span className='text-lg'>Title {title.length} / 200</span>
@@ -430,14 +371,15 @@ const SubmitNewTask = () => {
           
         </div>
         
-      </div>
+      </div> */}
     </div>
 
 
         </div>
         <div className="  md:w-1/3 w-full   rounded-2xl mt-4 ">
           <div className='bg-white p-4 rounded-xl shadow-xl'>
-          <div className="flex flex-col mb-4 ">
+            {/* Previous photo componnet backup  */}
+          {/* {<div className="flex flex-col mb-4 ">
           
  
  <input
@@ -469,76 +411,38 @@ const SubmitNewTask = () => {
  {photosError &&(
    <div className='text-red-600 text-sm text-center '>{photosError}</div>
  )} 
-</div>
+</div>} */}
+{/* Upload Photo */}
+<div className='flex flex-col items-center justify-center'>
+  <h1>Upload Images Upto 4 Submissions</h1>
+<div className='flex flex-row grid grid-cols-4 gap-4 mt-2 mb-2'>
+          {MultipleImagesSubmisssionData.map((submission, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                if (index === 0) {
+                  handleUploadPhoto(true,index);
+                } else {
+                  if (MultipleImagesSubmisssionData[index-1].photos.length >= 1) {
+                    handleUploadPhoto(true,index);
+                  }
+                }
+              }}
+              className={`bg-blue-500 text-white px-4 py-1 rounded-xl hover:bg-blue-400 hover:shadow-xl w-full text-lg ${
+                (index !== 0 && MultipleImagesSubmisssionData[index-1].photos.length < 1) ? '   opacity-50' : ''
+              }`}
+              disabled={index !== 0 && MultipleImagesSubmisssionData[index - 1].photos.length < 1}
+              >
+              Sub{index + 1}
+            </button>
+          ))}
+
+  </div> 
+  </div>
             {/* Categories */}
-<div className=" flex flex-col items-center justify-center">
-      <label className="block  mb-2">Store Category</label>
-      <select
-        className=" border rounded-xl p-2 mb-4 focus:outline-none text-lg"
-        value={selectedCategory}
-        onChange={(e) => handleCategoryChange(e.target.value)}
-      >
-        <option value=""  className='text-lg rounded-xl focus:outline-none'>Select a category</option>
-        {categories.map((category) => (
-          <option key={category.id} value={category.id}  className='text-sm'>
-            {category.name}
-          </option>
-        ))}
-      </select>
-      {selectedCategory && (
-        <div  className='text-lg'>
-          <label className="block  mb-2 text-center ">Subcategory</label>
-          <select
-            className="w-full border rounded-xl p-2 focus:outline-none "
-            value={selectedSubcategory}
-            onChange={(e) => handleSubcategoryChange(e.target.value)}
-          >
-            <option value="" className='text-lg'>Select a subcategory</option>
-            {categories
-              .find((category) => category.id === parseInt(selectedCategory))
-              .subcategories.map((subcategory) => (
-                <option key={subcategory.id} value={subcategory.id} className='text-sm'>
-                  {subcategory.name}
-                </option>
-              ))}
-          </select>
-        </div>
-      )}
-    </div>
-          <div className="flex flex-col text-black items-center justify-center p-2  ">
-            <h1 className="text-lg ">Height</h1>
-            <label htmlFor="Height" className="text-gray-700  mb-1 p-0.5"></label>
-            <input
-              type="text"
-              id="Height"
-              value={Height}
-              onChange={handleHeightChange}
-              className="border rounded-md  px-1 "
-              placeholder="Enter Height"
-              pattern="[0-9]+"
-              required
-            />
-            {HeightError && <p className="text-red-600 mt-1 text-sm  ">{HeightError}</p>}
-          </div>
-            <div className='flex flex-col text-black items-center justify-center p-2 '>
-                <h1 className='text-lg '>Length</h1>
-                <label htmlFor="Length" className="text-gray-700  mb-1">
-                </label>
-                <input
-                type="text"
-                id="Length"
-                value={Length}
-                onChange={handleLengthChange}
-                className="border rounded-md  px-1 "
-                placeholder="Enter task Quantity"
-                pattern="[1-9]+" // Only allow digits
-                required
-                />
-                {Lengtherror && <p className="text-red-600 mt-1 text-sm ">{Lengtherror}</p>}
 
-
-
-            </div>
+      
+           
             {/* {<div className='flex flex-col text-black items-center justify-center p-4 gap-1'>
                 <h1 className='text-xl '>Set Price </h1>
                 <div className='flex flex-row grid grid-row-3  '>
@@ -675,7 +579,13 @@ const SubmitNewTask = () => {
       </div>
       </div>
       )}
+    {ShowUploadPopUp ==true && (
+      <>
 
+      <UploadPhotos currentSubmissionID={currentSubmissionNUMBER}/>
+      </>
+
+    )}
       {showaddtaskwidget==='delete' &&(
         <div className='ml-16 flex flex-col items-center justify-center mt-24 p-4 '>
         <div className=' w-1/2 h-80 flex flex-col items-center justify-center bg-gray-100 p-4 rounded-2xl shadow-xl'>

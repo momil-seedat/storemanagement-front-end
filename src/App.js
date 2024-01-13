@@ -100,7 +100,7 @@ export default function App() {
   const navigate = useNavigate();
   setupAxiosInterceptors(() => {
     authContext.logout();
-    navigate("/auth/login");
+    navigate("/authentication/sign-in");
   });
 
   const [isDemo, setIsDemo] = useState(false);

@@ -13,15 +13,15 @@ import team2 from "assets/images/team-2.jpg";
 import MDButton from "components/MDButton";
 import { useEffect, useState } from "react";
 import { useMaterialUIController } from "context";
-import { setTaskSubmission } from "context";
+// import { setTaskSubmission } from "context";
 
 
-const GotoEditFormSubmission=(dispatch)=>{
-  setTaskSubmission(dispatch,true)
-}
-const GotoNewFormSubmission=(dispatch)=>{
-  setTaskSubmission(dispatch,false)
-}
+// const GotoEditFormSubmission=(dispatch)=>{
+//   setTaskSubmission(dispatch,true)
+// }
+// const GotoNewFormSubmission=(dispatch)=>{
+//   setTaskSubmission(dispatch,false)
+// }
 export default function data() {
   const Author = ({ image, name, email }) => (
     <MDBox display="flex" alignItems="center" lineHeight={1}>

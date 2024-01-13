@@ -1,17 +1,4 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
 
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 
 import { useEffect } from "react";
 
@@ -54,7 +41,9 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode, sidenavColor } = controller;
   const location = useLocation();
   const collapseName = location.pathname.replace("/", "");
+  const userGroup=localStorage.getItem("user_group");
   const { user, setUser } = useUserContext();
+ // const permission = JSON.parse(localStorage.getItem("permissions")) ;
 
 
   let textColor = "white";
@@ -126,8 +115,15 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const renderExampleRoutes = routes.map(
     ({ type, name, icon, title, noCollapse, key, href, route }) => {
       let returnValue;
-    //  console.log('User:',user.user_permissions);
-      if (type === "examples" ) {
+    //  console.log('User:',user);
+      if (type === "examples" /*&&  ( user.user_permissions.includes(key))*/){
+        
+        if((userGroup === "WORKER" &&(key === "view_task" || key==="view_user"))
+        || (userGroup === "ADMIN")
+        || (userGroup === "PROJECT MANAGER" && key !=="assign_permission")
+        || (userGroup === "CLIENT" && key === "view_project")
+        
+        ){
         returnValue = href ? (
           <Link
             href={href}
@@ -149,6 +145,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
           </NavLink>
         );
       }
+    }
       return returnValue;
     }
   );
@@ -206,7 +203,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
         ></Divider>
         {renderRoutes}
       </List>
-
+ 
     </SidenavRoot>
   );
 }

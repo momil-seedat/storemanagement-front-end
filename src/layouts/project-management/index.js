@@ -35,15 +35,21 @@ import authorsTableData from "layouts/project-management/data/projectTableData";
 
 function Projects() {
   const { columns, rows } = authorsTableData();
+  const userGroup=localStorage.getItem("user_group");
+  
  
   return (
     <DashboardLayout>
       <DashboardNavbar />
     
-      <MDButton  component={Link} to="/project-management/add-project" variant="gradient" color="dark">
+      <div>
+      {userGroup != "WORKER" && userGroup != "CLIENT" && (
+        <MDButton component={Link} to="/project-management/add-project" variant="gradient" color="dark">
           <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-          &nbsp;add new project
+          &nbsp;建立新項目
         </MDButton>
+      )}
+      </div>
     
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>

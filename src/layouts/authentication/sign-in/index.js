@@ -1,19 +1,6 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.1.0
-=========================================================
 
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
 
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-import { useState } from "react";
+import { useState ,useContext} from "react";
 import axios from 'axios';
 
 // react-router-dom components
@@ -37,14 +24,15 @@ import { useUserContext } from 'context/UserContext';
 import qs from 'qs';
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
-
+import { AuthContext } from "context";
 function Basic() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
   const { setUser } = useUserContext();
-
+  const authContext = useContext(AuthContext);
+  const apiBaseUrl = process.env.REACT_APP_STORE_BASE_URL;
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
   };
@@ -61,7 +49,7 @@ function Basic() {
         password,
       };
       const formData = qs.stringify(payload);
-      const apiEndpoint = 'http://localhost:8000/accounts/login/'; // Replace with the actual API endpoint
+      const apiEndpoint = apiBaseUrl+'/accounts/login/'; // Replace with the actual API endpoint
 
     // Make the POST request with the URL-encoded form data
     const response = await axios.post(apiEndpoint, formData, {
@@ -75,16 +63,24 @@ function Basic() {
       if (response && response.status == 200) {
         // Redirect to the dashboard
         setUser(response.data);
-        navigate("/dashboard"); // Use React Router history to navigate
+        localStorage.setItem("user", response.data.userId);
+        localStorage.setItem("user_group", response.data.user_group[0]);
+        localStorage.setItem("permissions", response.data.user_permissions);
+        authContext.login(response.data.token);
+     //   navigate("/dashboard"); // Use React Router history to navigate
       } else {
         console.error('Error:', error);
         // Handle login failure, show an error message, etc.
       }
-    } catch (error) {
-      // Handle request or network error
-      console.error('Error:', error);
-    }
-  };
+    } catch (res) {
+      // if (res.hasOwnProperty("message")) {
+      //   setCredentialsError(res.message);
+      // } else {
+      //   setCredentialsError(res.errors[0].detail);
+      // }
+  }};
+
+ 
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import DatePicker from 'react-datepicker';
+
 import 'react-datepicker/dist/react-datepicker.css'; // Import the styles
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday'; // Import the calendar icon
-import { Radio, RadioGroup, FormControl, FormControlLabel, FormLabel } from '@mui/material';
+import axios from 'axios';
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -14,9 +13,11 @@ import MDAlert from "components/MDAlert";
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
+
 import Dropdown from "examples/DropDowns";
-import Icon from "@mui/material/Icon";
+import { useUserContext } from 'context/UserContext';
+import { useNavigate } from "react-router-dom";
+
 
 // Overview page components
 import Header from "layouts/project-management/Header";
@@ -26,61 +27,43 @@ import Header from "layouts/project-management/Header";
 const AddProject = () => {
   const [isDemo, setIsDemo] = useState(false);
   const [notification, setNotification] = useState(false);
+  const [selectedStore, setSelectedStore] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("user");
+  const [isFormReset, setIsFormReset] = useState(true);
+  const apiBaseUrl = process.env.REACT_APP_STORE_BASE_URL;
+
   const [project, setProject] = useState({
-    name: "",
-    type: "",
-    main_project: "",
+    title: "",
     description: "",
-
-
   });
 
+  const handleDropDownSelect = selectedValue => {
+    setSelectedStore(selectedValue);
+  };
 
 
   const [errors, setErrors] = useState({
-    nameError: false,
-    typeError: false,
-
+    titleError: false,
+    descriptionError: false,
 
   });
 
-  const handleProjectTypeChange = (e) => {
-    setProject({ ...project, projectType: e.target.value });
+  const resetForm = () => {
+    setSelectedStore("");
+    setProject({
+      title: "",
+      description: "",
+    });
+    setErrors({
+      titleError: false,
+    });
+    setSuccessMessage('');
+    setErrorMessage('');
   };
-
-  const changeTypeHandler = (event) => {
-    const { name, value, type, checked } = event.target;
-
-    if (type === 'radio') {
-      // Handle radio button change
-      if (name === 'projectType') {
-        // Update the store object with the selected project type
-        setProject({ ...project, projectType: value });
-      }
-    } else {
-      // Handle other input field changes
-      setProject({ ...project, [name]: value });
-    }
-  };
-
-
-  // const getprojectData = async () => {
-  //   const response = await AuthService.getProfile();
-  //   if (response.data.id == 1) {
-  //     setIsDemo(process.env.REACT_APP_IS_DEMO === "true");
-  //   }
-  //   setproject((prevproject) => ({
-  //     ...prevproject,
-  //     ...response.data.attributes,
-
-  //   }));
-  // };
-
-
-
-  // useEffect(() => {
-  //   getprojectData();
-  // }, []);
 
   useEffect(() => {
     if (notification === true) {
@@ -100,44 +83,56 @@ const AddProject = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    // validation
-    const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
-    if (project.name.trim().length === 0) {
-      setErrors({ ...errors, nameError: true });
+    if (!project.title.trim()) {
+      setErrors({ titleError: true });
       return;
     }
 
-    if (project.email.trim().length === 0 || !project.email.trim().match(mailFormat)) {
-      setErrors({ ...errors, emailError: true });
-      return;
+    if (!selectedStore) {
+      setErrorMessage("Please select store..");
+      return
     }
 
+    try {
 
+      const projectData = {
+        title: project.title,
+        description: project.description,
+        project_serial_no : project.serial,
+        store: selectedStore,
+        created_by: userId
+      };
 
-    let projectData = {
-      data: {
-        type: "profile",
-        attributes: {
-          name: project.name,
-          type: project.type,
-          main_project: project.main_project,
-          description: project.description,
+      console.log(projectData);
 
+      const response = await axios.post(apiBaseUrl+'/api/projects/', projectData, {
+        headers: {
+          Authorization: `Token ${token}`,  // Replace with your authentication token
         },
-      },
-    };
+      });
+      // call api for update
 
+      console.log('Project submitted successfully:', response.data);
 
+      if (response) {
+        setSuccessMessage('您的專案已成功新增');
+        resetForm();
+        setErrorMessage("");
+ 
+        // Reset form values upon successful submission
+      } else {
+        setErrorMessage('儲存項目時發生錯誤'); // Display error message if response status is not 200
+      }
 
-    // call api for update
-    // const response = await AuthService.updateProfile(JSON.stringify(projectData));
-
+    } catch (error) {
+      setErrorMessage('儲存項目時發生錯誤');
+      // Handle error submitting project
+    }
     // reset errors
     setErrors({
-      nameError: false,
-      emailError: false,
-      ownerError: false,
+      titleError: false,
+      descriptionError: false,
+
     });
 
     setNotification(true);
@@ -147,25 +142,32 @@ const AddProject = () => {
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox mb={2} />
-      <Header name={project.name}>
+      <Header name={project.title}>
         {notification && (
           <MDAlert color="info" mt="20px">
             <MDTypography variant="body2" color="white">
-              Your profile has been updated
+            您的專案已成功新增
             </MDTypography>
           </MDAlert>
         )}
 
-        <MDBox height="100%" mt={1.5} lineHeight={1.5}>
+        {notification && errorMessage && (
+          <MDAlert color="error" mt="20px">
+            <MDTypography variant="body2" color="white">
+              {errorMessage}
+            </MDTypography>
+          </MDAlert>
+        )}
+
+        <MDBox height="100%" mt={1.5} mb={2} lineHeight={1.5}>
           <MDTypography variant="h4" fontWeight="medium">
-            Add New Project
+          建立新項目
           </MDTypography>
         </MDBox>
 
         <MDBox
           component="form"
           role="form"
-          onSubmit={submitHandler}
           display="flex"
           flexDirection="column"
         >
@@ -178,20 +180,20 @@ const AddProject = () => {
             mr={2}
           >
             <MDTypography variant="body2" color="text" ml={1} fontWeight="regular">
-              Name
+            项目标题
             </MDTypography>
             <MDBox mb={2} width="50%">
               <MDInput
-                type="name"
+                type="title"
                 fullWidth
-                name="name"
-                value={project.name}
+                name="title"
+                value={project.title}
                 onChange={changeHandler}
-                error={errors.nameError}
+                error={errors.titleError}
               />
-              {errors.nameError && (
+              {errors.titleError && (
                 <MDTypography variant="caption" color="error" fontWeight="light">
-                  The name can not be null
+                  标题不能为空
                 </MDTypography>
               )}
             </MDBox>
@@ -205,7 +207,7 @@ const AddProject = () => {
             mr={2}
           >
             <MDTypography variant="body2" color="text" ml={1} fontWeight="regular">
-              Enter Description
+            输入描述
             </MDTypography>
             <MDBox mb={2} width="50%">
               <MDInput
@@ -219,18 +221,34 @@ const AddProject = () => {
 
             </MDBox>
           </MDBox>
-          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
-            <MDTypography variant="body2" color="text" ml={2} fontWeight="regular">
-
+          <MDBox
+            display="flex"
+            flexDirection="column"
+            alignItems="flex-start"
+            width="100%"
+            mr={2}
+          >
+            <MDTypography variant="body2" color="text" ml={1} fontWeight="regular">
+            输入项目序列号
             </MDTypography>
+            <MDBox mb={2} width="50%">
+              <MDInput
+                type="text"
+                fullWidth
+                name="serial"
+                value={project.serial}
+                onChange={changeHandler}
 
-          </div>
+              />
 
+            </MDBox>
+          </MDBox>
 
+          <Dropdown onSelectChange={handleDropDownSelect} ></Dropdown>
 
           <div style={{ display: 'flex', justifyContent: 'end' }}>
-            <MDButton variant="gradient" color="info" type="submit">
-              Save changes
+            <MDButton variant="gradient" color="info" type="submit" onClick={submitHandler}>
+            保存更改
             </MDButton>
           </div>
         </MDBox>

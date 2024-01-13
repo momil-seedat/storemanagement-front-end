@@ -20,15 +20,19 @@ import authorsTableData from "layouts/user-management/data";
 
 const UserManagement = () => {
   const { columns, rows } = authorsTableData();
+  const userGroup = localStorage.getItem("user_group");
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      {userGroup === "ADMIN" && (
       <MDButton  component={Link} to="/user-profile" variant="gradient" color="dark">
           <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-          &nbsp;add new user
+          &nbsp;新增用戶
+          {/* add new user */}
         </MDButton>
-      <MDBox pt={6} pb={3}>
+      )}
+      {/* <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <Card>
@@ -49,6 +53,25 @@ const UserManagement = () => {
               <MDBox pt={3}>
                 <DataTable
                   table={{ columns, rows }}
+                  isSorted={true}
+                  entriesPerPage={false}
+                  showTotalEntries={false}
+                  noEndBorder
+                />
+              </MDBox>
+            </Card>
+          </Grid>
+        </Grid>
+      </MDBox> */}
+            <MDBox pt={6} pb={3}>
+        <Grid container spacing={6}>
+          
+          <Grid item xs={12}>
+            <Card>
+          
+              <MDBox pt={3}>
+                <DataTable
+                  table={{ columns, rows }}
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}
@@ -57,6 +80,7 @@ const UserManagement = () => {
               </MDBox>
             </Card>
           </Grid>
+       
         </Grid>
       </MDBox>
     </DashboardLayout>
